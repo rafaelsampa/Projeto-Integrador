@@ -1,5 +1,4 @@
-import React from 'react';
-import { SafeAreaView, Text} from 'react-native';
+import React, { useState } from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 
 import Home from '../views/Home';
@@ -13,87 +12,88 @@ import Submit from '../views/Submit';
 import NextBack from '../components/NextBack';
 import StartRep from '../components/StartRep';
 
-const Stack = createStackNavigator()
+const Stack = createStackNavigator();
 
-export default props => (
-  <Stack.Navigator initialRouteName="Home">
+export default props => {
+  const [answers, setAnswers] = useState({
+    Social: { totalSelected: 0, totalMax: 0 },
+    Ambiental: { totalSelected: 0, totalMax: 0 },
+    Governança: { totalSelected: 0, totalMax: 0 }
+  });
 
-    {/* Home screen */}
-    <Stack.Screen name="Home"
-      options={{ title: "Home"}}>
+  const handleAnswer = (response, weight, category, maxWeight) => {
+    setAnswers(prev => {
+      const updated = { ...prev };
+      updated[category].totalSelected += weight;
+      updated[category].totalMax += maxWeight;
+      return updated;
+    });
+  };
 
-      {props => (
-        <StartRep {...props} next="QuestionsScreen01">
-          <Home />
-        </StartRep>
-      )}
+  return (
+    <Stack.Navigator initialRouteName="Home">
 
-    </Stack.Screen>
+      {/* Home screen */}
+      <Stack.Screen name="Home" options={{ title: "Home" }}>
+        {props => (
+          <StartRep {...props} next="QuestionsScreen01">
+            <Home />
+          </StartRep>
+        )}
+      </Stack.Screen>
 
-    {/* Questions screen 01 */}
-    <Stack.Screen name="QuestionsScreen01"
-      options={{ title: "Answer the questions"}}>
+      {/* Questions screen 01 */}
+      <Stack.Screen name="QuestionsScreen01" options={{ title: "Answer the questions" }}>
+        {props => (
+          <NextBack {...props} next="QuestionsScreen02">
+            <QuestionsScreen01 onAnswer={handleAnswer} answers={answers} />
+          </NextBack>
+        )}
+      </Stack.Screen>
 
-      {props => (
-        <NextBack {...props} next="QuestionsScreen02">
-          <QuestionsScreen01 />
-        </NextBack>
-      )}
+      {/* Questions screen 02 */}
+      <Stack.Screen name="QuestionsScreen02" options={{ title: "Answer the questions" }}>
+        {props => (
+          <NextBack {...props} next="QuestionsScreen03">
+            <QuestionsScreen02 onAnswer={handleAnswer} answers={answers} />
+          </NextBack>
+        )}
+      </Stack.Screen>
 
-    </Stack.Screen>
+      {/* Questions screen 03 */}
+      <Stack.Screen name="QuestionsScreen03" options={{ title: "Answer the questions" }}>
+        {props => (
+          <NextBack {...props} next="QuestionsScreen04">
+            <QuestionsScreen03 onAnswer={handleAnswer} answers={answers} />
+          </NextBack>
+        )}
+      </Stack.Screen>
 
-    {/* Questions screen 02 */}
-    <Stack.Screen name="QuestionsScreen02"
-      options={{ title: "Answer the questions"}}>
+      {/* Questions screen 04 */}
+      <Stack.Screen name="QuestionsScreen04" options={{ title: "Answer the questions" }}>
+        {props => (
+          <NextBack {...props} next="QuestionsScreen05">
+            <QuestionsScreen04 onAnswer={handleAnswer} answers={answers} />
+          </NextBack>
+        )}
+      </Stack.Screen>
 
-      {props => (
-        <NextBack {...props} next="QuestionsScreen03">
-          <QuestionsScreen02 />
-        </NextBack>
-      )}
+      {/* Questions screen 05 */}
+      <Stack.Screen name="QuestionsScreen05" options={{ title: "Answer the questions" }}>
+        {props => (
+          <NextBack {...props} submit="Submit">
+            <QuestionsScreen05 onAnswer={handleAnswer} answers={answers} />
+          </NextBack>
+        )}
+      </Stack.Screen>
 
-    </Stack.Screen>
+      {/* Submit screen */}
+      <Stack.Screen name="Submit" options={{ title: "Done" }}>
+        {props => (
+          <Submit {...props} answers={answers} />
+        )}
+      </Stack.Screen>
 
-    {/* Questions screen 03 */}
-    <Stack.Screen name="QuestionsScreen03"
-      options={{ title: "Answer the questions"}}>
-
-      {props => (
-        <NextBack {...props} next="QuestionsScreen04">
-          <QuestionsScreen03 />
-        </NextBack>
-      )}
-
-    </Stack.Screen>
-
-    {/* Questions screen 04 */}
-    <Stack.Screen name="QuestionsScreen04"
-      options={{ title: "Answer the questions"}}>
-
-      {props => (
-        <NextBack {...props} next="QuestionsScreen05">
-          <QuestionsScreen04 />
-        </NextBack>
-      )}
-
-    </Stack.Screen>
-
-    {/* Questions screen 05 */}
-    <Stack.Screen name="QuestionsScreen05"
-      options={{ title: "Answer the questions"}}>
-
-      {props => (
-        <NextBack {...props} submit="Submit">
-          <QuestionsScreen05 />
-        </NextBack>
-      )}
-
-    </Stack.Screen>
-
-    {/* Submit screen */}
-    <Stack.Screen name="Submit"
-      component={Submit}
-      options={{ title: "Done"}} />
-
-  </Stack.Navigator>
-)
+    </Stack.Navigator>
+  );
+};
